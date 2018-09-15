@@ -1,0 +1,11 @@
+Add -n <line-number> option. For that split get_meta like so:
+
+    get_content(){
+        $GPG -d "${GPG_OPTS[@]}" "$passfile"
+    }
+
+    get_meta(){
+        get_content | tail -n +2
+    }
+
+and use get_content | tail ... | head ... to select the line.

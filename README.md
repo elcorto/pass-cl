@@ -9,14 +9,15 @@ followed by data such as the URL, username and other metadata in the following
 lines. A common password file would like this:
 
 ```
-Yw|ZSNH!}z"6{ym9pI
-URL: *.amazon.com/*
-Username: AmazonianChicken@example.com
+passzzwoo00rrd11!!1!!
+URL: foo.com
+Username: user@foo.com
 ```
 
-A common use case is to copy the first line (the password) using `pass -c
-foo` from the file `$PASSWORD_STORE_DIR/foo.gpg`. However, the metadata is not
-copied. It can only displayed with another `pass foo`.
+A common use case is to copy the first line (the password) using `pass -c foo`
+from the file `$PASSWORD_STORE_DIR/foo.gpg`. However, the metadata, i.e.
+everything beyond the first line, is not copied. It can only be displayed with
+another `pass foo`.
 
 ## Usage
 
@@ -24,17 +25,19 @@ copied. It can only displayed with another `pass foo`.
 pass pclip foo
 ```
 The default behavior is to copy the second line (line after password) into the
-primary selection. The password is
-copied to the clipboard selection as usual. See below for more on X selections.
+primary selection. The first line (password) is copied to the clipboard
+selection as usual. See below for more on X selections.
 
-If you have data on another line than the second, you can set `PASS_PCLIP_KEY`
-to a regex matching that line.
+If you have data on another line than the second, you can use the `-r` flag
+to provide a regex matching that line.
 
 ```sh
-export PASS_PCLIP_KEY='^Username:\s?'
+pass pclip -r '^Username:\s?' foo
 ```
 
-The matching part of the line is removed, leaving only the metadata.
+The matching part of the line is removed, leaving only the metadata. Make sure
+to use `-r` right after `pclip`, else `pass`'s command line parser will
+complain.
 
 ## Installation
 

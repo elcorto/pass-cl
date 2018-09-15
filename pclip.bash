@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u -o pipefail
+
 err(){
     die "pass pclip: $@"
 }
@@ -13,20 +15,32 @@ do_xclip(){
     echo "Copied metadata to primary selection."
 }
 
+get_meta(){
+    $GPG -d "${GPG_OPTS[@]}" "$passfile" | tail -n +2
+}
+
+local key=
+while getopts r: opt; do
+    case $opt in
+        r)  key="$OPTARG";;
+        \?) exit 1;;
+    esac
+done
+shift $((OPTIND - 1))
+
 local path="$1"
 local passfile="$PREFIX/$path.gpg"
-local key="${PASS_PCLIP_KEY}"
 
 check_sneaky_paths "$path"
 
 if [[ -f $passfile ]]; then
     if [[ -z "$key" ]]; then
-        $GPG -d "${GPG_OPTS[@]}" "$passfile" | tail -n +2 | head -n1 \
-            | do_xclip || err "could not copy metadata, exit $?"
+        get_meta | head -n1 \
+            | do_xclip || err "could not copy metadata from 2nd line, exit $?"
     else
-        $GPG -d "${GPG_OPTS[@]}" "$passfile" | tail -n +2 \
-            | grep -E -m1 "$key" | sed -E "s/$key//" | do_xclip \
-            || err "could not copy metadata, exit $?"
+        meta=$(get_meta | grep -E -m1 "$key") || err "regex '$key' doesn't match"
+        echo "$meta" | sed -E "s/$key//" | do_xclip \
+            || err "could not copy metadata with regex '$key', exit $?"
     fi
 elif [[ -z $path ]]; then
     die ""
