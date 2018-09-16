@@ -14,3 +14,6 @@
   we want to paste a password in the shell using Shift-Ins, which only pastes
   primary. If there is a way to paste the clipboard in the shell, I'd really
   like to know.
+
+* -r flag: The regex removal using sed in only reliable when it is a prefix.
+  Change behavior to let the user provide a match group: '^Note:\s*(.+)$'.
