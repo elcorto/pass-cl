@@ -64,6 +64,8 @@ There are different X selections (see `xclip -selection`):
 * "secondary = `XA_SECONDARY` (usually not used)
 * "clipboard" = `XA_CLIPBOARD` (CTRL-V to paste in most GUI apps)
 
+See also [xclip-dump.sh](https://github.com/elcorto/shelltools/blob/master/bin/xclip-dump.sh).
+
 ## Contribution
 
 Contributions are always welcome.
