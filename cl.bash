@@ -3,7 +3,7 @@
 set -u -o pipefail
 
 err(){
-    die "pass pclip: $@"
+    die "pass cl: $@"
 }
 
 do_xclip(){

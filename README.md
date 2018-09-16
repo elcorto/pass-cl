@@ -1,4 +1,4 @@
-# pass pclip
+# pass cl
 
 An extension for [password store](https://www.passwordstore.org/) that copies
 metadata into the primary X selection (middle mouse button). 
@@ -22,7 +22,7 @@ another `pass foo`.
 ## Usage
 
 ```sh
-pass pclip foo
+pass cl foo
 ```
 The default behavior is to copy the second line (line after password) into the
 primary selection. The first line (password) is copied to the clipboard
@@ -32,17 +32,17 @@ If you have data on another line than the second, you can use the `-r` flag
 to provide a regex matching that line.
 
 ```sh
-pass pclip -r '^Username:\s?' foo
+pass cl -r '^Username:\s?' foo
 ```
 
 The matching part of the line is removed, leaving only the metadata. Make sure
-to use `-r` right after `pclip`, else `pass`'s command line parser will
+to use `-r` right after `cl`, else `pass`'s command line parser will
 complain.
 
 ## Installation
 
 - Enable password-store extensions by setting ``PASSWORD_STORE_ENABLE_EXTENSIONS=true``
-- Add `pclip.bash` in `~/.password-store/.extensions` and make it executable
+- Add `cl.bash` in `~/.password-store/.extensions` and make it executable
 
 The default extensions location is `$HOME/.password-store/.extensions`, which
 is not ideal since that makes the extensions dir part of the password git repo
@@ -53,7 +53,7 @@ copying.
 ```sh
 $ export PASSWORD_STORE_EXTENSIONS_DIR=$HOME/.pass_extensions
 $ mkdir -p $PASSWORD_STORE_EXTENSIONS_DIR
-$ ln -s $(pwd)/pclip.bash $PASSWORD_STORE_EXTENSIONS_DIR/pclip.bash 
+$ ln -s $(pwd)/cl.bash $PASSWORD_STORE_EXTENSIONS_DIR/cl.bash 
 ```
 
 ## X selections
