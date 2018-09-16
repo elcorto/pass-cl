@@ -28,6 +28,7 @@ while getopts r: opt; do
 done
 shift $((OPTIND - 1))
 
+[ $# -ge 1 ] || err "missing argument"
 local path="$1"
 local passfile="$PREFIX/$path.gpg"
 
@@ -42,8 +43,6 @@ if [[ -f $passfile ]]; then
         echo "$meta" | sed -E "s/$key//" | do_xclip \
             || err "could not copy metadata with regex '$key', exit $?"
     fi
-elif [[ -z $path ]]; then
-    die ""
 else
     err "Error: $path is not in the password store."
 fi
