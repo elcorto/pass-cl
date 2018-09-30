@@ -2,7 +2,7 @@ pass cl
 =======
 
 An extension for `password-store <https://www.passwordstore.org>`_ that copies
-metadata into the primary X selection (middle mouse button). 
+metadata into the primary X selection (middle mouse button).
 
 password-store proposes a multi-line format in which the password is on the
 first line and arbitrary metadata on the following lines. A typical password
@@ -37,7 +37,7 @@ for more on X selections.
 Check:
 
 .. code-block:: sh
-    
+
     $ xclip -o -selection clipboard
     passzzwoo00rrd11!!1!!
     $ xclip -o -selection primary
@@ -59,20 +59,13 @@ complain.
 Installation
 ------------
 
-* ``export PASSWORD_STORE_ENABLE_EXTENSIONS=true``
-* Add ``cl.bash`` to ``~/.password-store/.extensions`` and make it executable
-
-The default extensions location is ``$HOME/.password-store/.extensions``, which
-is not ideal since that makes the extensions dir part of the password git repo
-(in which case you want to ``.gitignore`` that). We suggest instead to use a
-separate dir. You may also link to the git repo of this extension instead of
-copying.
-
 .. code-block:: sh
 
+    $ export PASSWORD_STORE_ENABLE_EXTENSIONS=true
     $ export PASSWORD_STORE_EXTENSIONS_DIR=$HOME/.pass_extensions
     $ mkdir -p $PASSWORD_STORE_EXTENSIONS_DIR
-    $ ln -s $(pwd)/cl.bash $PASSWORD_STORE_EXTENSIONS_DIR/cl.bash 
+    $ ln -s $(pwd)/cl.bash $PASSWORD_STORE_EXTENSIONS_DIR/cl.bash
+
 
 X selections
 ------------
