@@ -9,7 +9,7 @@ err(){
 do_xclip(){
     # Some versions of xclip seem to have a -r flag. Ours doesn't (Debian).
     stdin=$(cat)
-    echo "$stdin" | xclip -selection primary > /dev/null 2>&1
+    echo "$stdin" | xclip -sel prim > /dev/null 2>&1
     [ $? -eq 0 ] || echo "$stdin" | xclip -r > /dev/null 2>&1
     [ $? -eq 0 ] || err "xclip failed"
     echo "Copied metadata to primary selection."
@@ -19,10 +19,24 @@ get_meta(){
     $GPG -d "${GPG_OPTS[@]}" "$passfile" | tail -n +2
 }
 
+usage(){
+    cat << EOF
+    pass cl [-r <regex>] [-s] <entry>
+
+options:
+    -r <regex> : select line containing <regex> for metadata, remove <regex>
+                 from result
+    -s         : swap primary and clipboard selection content
+EOF
+}
+
 local key=
-while getopts r: opt; do
+local swap_sels=false
+while getopts r:sh opt; do
     case $opt in
-        r)  key="$OPTARG";;
+        r) key="$OPTARG";;
+        s) swap_sels=true;;
+        h) usage; exit 0;;
         \?) exit 1;;
     esac
 done
@@ -48,3 +62,9 @@ else
 fi
 
 cmd_show --clip "$@"
+
+if $swap_sels; then
+    prim=$(xclip -o -sel prim)
+    xclip -o -sel clip | xclip -i -sel prim
+    echo "$prim" | xclip -i -sel clip
+fi
