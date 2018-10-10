@@ -34,8 +34,8 @@ local passfile="$PREFIX/$path.gpg"
 
 check_sneaky_paths "$path"
 
-if [[ -f $passfile ]]; then
-    if [[ -z "$key" ]]; then
+if [ -f $passfile ]; then
+    if [ -z "$key" ]; then
         get_meta | head -n1 \
             | do_xclip || err "could not copy metadata from 2nd line, exit $?"
     else
