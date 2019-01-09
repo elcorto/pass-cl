@@ -2,11 +2,22 @@ pass cl
 =======
 
 An extension for `password-store <https://www.passwordstore.org>`_ that copies
-metadata into the primary X selection (middle mouse button).
+the password plus additional metadata (e.g. login name).
 
-password-store proposes a multi-line format in which the password is on the
-first line and arbitrary metadata on the following lines. A typical password
-file (``$PASSWORD_STORE_DIR/foo.gpg``) would look like this:
+The default from ``pass insert foo`` results in a one-line password file
+(``$PASSWORD_STORE_DIR/foo.gpg``).
+
+::
+
+    passzzwoo00rrd11!!1!!
+
+A common use case is to copy the first line (the password) using ``pass -c
+foo`` into the Clipboard X selection (CTRL-V to paste). See below for more on X
+selections.
+
+``pass``  also supports multiple lines (``pass insert -m foo``) in which the
+password is on the first line and arbitrary metadata on the following lines. A
+typical entry would look like this:
 
 ::
 
@@ -15,13 +26,10 @@ file (``$PASSWORD_STORE_DIR/foo.gpg``) would look like this:
     meta:bar
     more meta=baz
 
-where the second line could be the login name.
-
-A common use case is to copy the first line (the password) using ``pass -c
-foo`` into Clipboard. The default from ``pass insert foo`` results in a
-one-line file, so ``pass`` always copies the first line. Everything beyond the
-first line (metadata) is ignored. It can only be displayed with another ``pass
-foo``.
+where the second line could be the login name. However, everything beyond the
+first line is ignored by ``pass``. It can only be displayed with another ``pass
+foo`` and copied manually if needed. This extension additionally copies the
+second line (by default) to another X selection.
 
 Usage
 -----
@@ -31,10 +39,11 @@ Usage
     $ pass cl foo
 
 The default behavior is to copy the first line (password) to the Clipboard
-(CTRL-V) as usual (like ``pass -c foo``). Additionally, the second line is
-copied into Primary (middle mouse). See below for more on X selections.
+as usual (like ``pass -c foo``, paste with CTRL-V). Additionally, the second
+line is copied into the Primary selection (Shift-Insert or middle mouse button
+to paste).
 
-Check:
+We can use the ``xclip`` tool to check what we copied into which selection.
 
 .. code-block:: sh
 
@@ -43,8 +52,12 @@ Check:
     $ xclip -o -sel prim
     user@foo.com
 
-If you have data on another line than the second or want to strip part of the
-line, you can use the ``-r`` flag to provide a regex matching that line.
+The typical workflow is thus ``pass cl foo``, go to where credentials need to
+be inserted (e.g. the browser), middle mouse -> login, CTRL-V -> password.
+
+If you want to copy metadata from another line than the second or want to strip
+part of the line, you can use the ``-r`` flag to provide a regex matching that
+line.
 
 .. code-block:: sh
 
@@ -60,16 +73,16 @@ of ``meta : bar``) to keep the regex simple. In the last example we would need
 to be removed, leaving only ``bar`` without any whitespace.
 
 ``pass`` copies the password to Clipboard. If you need to paste this in a shell
-where you cannot use CTRL-V (e.g. XTerm), you can copy it to Primary with plain
-``pass`` like so:
+where you cannot use CTRL-V (e.g. XTerm), you can copy it to Primary instead
+with plain ``pass`` like so:
 
 .. code-block:: sh
 
     $ PASSWORD_STORE_X_SELECTION=primary pass -c foo
 
-and paste that in the shell (or anywhere else) with Shift-Insert, which always
-pastes Primary only. With ``pass cl``, you can use the ``-s`` option to swap
-the content of Primary and Clipboard to have the password in Primary.
+and paste that in the shell or anywhere else with Shift-Insert or the middle
+mouse button. With ``pass cl``, you can use the ``-s`` option to swap the
+content of Primary and Clipboard to have the password in Primary.
 
 .. code-block:: sh
 
@@ -103,8 +116,9 @@ X selections
 
 There are different X selections (see ``xclip -selection``):
 
-* "primary" = `XA_PRIMARY` (default in xclip, use middle mouse to paste)
-* "secondary = `XA_SECONDARY` (usually not used)
-* "clipboard" = `XA_CLIPBOARD` (CTRL-V to paste in most GUI apps)
+* primary: default in xclip, use Shift-Insert or the middle mouse button to
+  paste
+* secondary: usually not used
+* clipboard: CTRL-V to paste in most GUI apps
 
 See also `xclip-dump.sh <https://github.com/elcorto/shelltools/blob/master/bin/xclip-dump.sh>`_.
