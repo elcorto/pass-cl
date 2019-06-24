@@ -1,5 +1,5 @@
-pass cl
-=======
+About
+=====
 
 An extension for `password-store <https://www.passwordstore.org>`_ that copies
 the password plus additional metadata (e.g. login name).
@@ -25,6 +25,7 @@ typical entry would look like this:
     user@foo.com
     meta:bar
     more meta=baz
+    otherstuff
 
 where the second line could be the login name. However, everything beyond the
 first line is ignored by ``pass``. It can only be displayed with another ``pass
@@ -32,18 +33,17 @@ foo`` and copied manually if needed. This extension additionally copies the
 second line (by default) to another X selection.
 
 Usage
------
+=====
 
 .. code-block:: sh
 
     $ pass cl foo
 
-The default behavior is to copy the first line (password) to the Clipboard
-as usual (like ``pass -c foo``, paste with CTRL-V). Additionally, the second
-line is copied into the Primary selection (Shift-Insert or middle mouse button
-to paste).
-
-We can use the ``xclip`` tool to check what we copied into which selection.
+The default behavior is to copy the first line (password) to the Clipboard as
+usual (like ``pass -c foo``, paste with CTRL-V). Additionally, the second line
+is copied into the Primary selection (Shift-Insert or middle mouse button to
+paste). We can use the ``xclip`` tool to check what we copied into which
+selection.
 
 .. code-block:: sh
 
@@ -55,8 +55,19 @@ We can use the ``xclip`` tool to check what we copied into which selection.
 The typical workflow is thus ``pass cl foo``, go to where credentials need to
 be inserted (e.g. the browser), middle mouse -> login, CTRL-V -> password.
 
-If you want to copy metadata from another line than the second or want to strip
-part of the line, you can use the ``-r`` flag to provide a regex matching that
+Select a metadata line
+----------------------
+
+If you want to copy metadata from another line than the second, you can use
+``-l``.
+
+.. code-block:: sh
+
+    $ pass cl -l5 foo
+    $ xclip -o -sel prim
+    otherstuff
+
+Alternatively, you can use the ``-r`` option to provide a regex matching that
 line.
 
 .. code-block:: sh
@@ -65,12 +76,15 @@ line.
     $ xclip -o -sel prim
     bar
 
-The matching part of the line is removed, leaving only the metadata. Make sure
-to use ``-r`` right after ``cl``, else ``pass``'s command line parser will
-complain. Hint: avoid whitespaces in your metadata lines (``meta:bar`` instead
-of ``meta : bar``) to keep the regex simple. In the last example we would need
-``-r 'meta\s+:\s+'`` to match all whitespaces since we want the complete match
-to be removed, leaving only ``bar`` without any whitespace.
+The matching part of the line is removed, leaving only the metadata. This is
+useful for selecting lines by prefix (such as ``meta:``). Hint: avoid
+whitespaces in your metadata lines (``meta:bar`` instead of ``meta : bar``) to
+keep the regex simple. In the last example we would need ``-r 'meta\s+:\s+'``
+to match all whitespaces since we want the complete match to be removed,
+leaving only ``bar`` without any whitespace.
+
+Swap selection content
+----------------------
 
 ``pass`` copies the password to Clipboard. If you need to paste this in a shell
 where you cannot use CTRL-V (e.g. XTerm), you can copy it to Primary instead
@@ -81,7 +95,7 @@ with plain ``pass`` like so:
     $ PASSWORD_STORE_X_SELECTION=primary pass -c foo
 
 and paste that in the shell or anywhere else with Shift-Insert or the middle
-mouse button. With ``pass cl``, you can use the ``-s`` option to swap the
+mouse button. With ``pass cl``, you can use the ``-s`` flag to swap the
 content of Primary and Clipboard to have the password in Primary.
 
 .. code-block:: sh
@@ -98,6 +112,13 @@ Check:
     passzzwoo00rrd11!!1!!
     $ <Shift-Insert>
     passzzwoo00rrd11!!1!!
+
+
+Misc
+----
+
+Make sure to place this extension's options right after ``cl``, else ``pass``'s
+command line parser will complain.
 
 
 Installation
