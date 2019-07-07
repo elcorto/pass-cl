@@ -2,7 +2,15 @@ About
 =====
 
 An extension for `password-store <https://www.passwordstore.org>`_ that copies
-the password plus additional metadata (e.g. login name).
+the password and additional metadata (e.g. login name) into separate X
+selections.
+
+Defaults:
+
+* password: ``PASSWORD_STORE_X_SELECTION=clipboard`` (default in ``pass``)
+* metadata: ``PASSWORD_STORE_X_SELECTION_META=primary`` (this extension)
+
+See below for more on X selections.
 
 The default from ``pass insert foo`` results in a one-line password file
 (``$PASSWORD_STORE_DIR/foo.gpg``).
@@ -11,13 +19,13 @@ The default from ``pass insert foo`` results in a one-line password file
 
     passzzwoo00rrd11!!1!!
 
-A common use case is to copy the first line (the password) using ``pass -c
-foo`` into the Clipboard X selection (CTRL-V to paste). See below for more on X
-selections.
+A common use case is to copy this using ``pass show -c foo`` (or just ``pass -c
+foo``, ``show`` is default) into the Clipboard X selection (CTRL-V to paste).
 
 ``pass``  also supports multiple lines (``pass insert -m foo``) in which the
-password is on the first line and arbitrary metadata on the following lines. A
-typical entry would look like this:
+password is on the first line (or any other with ``pass -c <line_number> foo``)
+and arbitrary metadata on the other lines. A typical entry would look like
+this:
 
 ::
 
@@ -27,10 +35,11 @@ typical entry would look like this:
     more meta=baz
     otherstuff
 
-where the second line could be the login name. However, everything beyond the
-first line is ignored by ``pass``. It can only be displayed with another ``pass
-foo`` and copied manually if needed. This extension additionally copies the
-second line (by default) to another X selection.
+where the second line could be the login name. However, everything except the
+password line is ignored by ``pass -c``. It can only be displayed with another
+``pass foo`` and copied manually if needed. This extension additionally copies
+the second line (by default) to another X selection
+(``PASSWORD_STORE_X_SELECTION_META``).
 
 Usage
 =====
@@ -59,7 +68,7 @@ Select a metadata line
 ----------------------
 
 If you want to copy metadata from another line than the second, you can use
-``-l``.
+``-l <line_number>``.
 
 .. code-block:: sh
 
@@ -86,9 +95,9 @@ leaving only ``bar`` without any whitespace.
 Swap selection content
 ----------------------
 
-``pass`` copies the password to Clipboard. If you need to paste this in a shell
-where you cannot use CTRL-V (e.g. XTerm), you can copy it to Primary instead
-with plain ``pass`` like so:
+``pass show`` copies the password to Clipboard. If you need to paste this in a
+shell where you cannot use CTRL-V (e.g. XTerm), you can copy it to Primary
+instead with plain ``pass`` like so:
 
 .. code-block:: sh
 
@@ -114,15 +123,34 @@ Check:
     passzzwoo00rrd11!!1!!
 
 
-Misc
-----
+pass compatibility
+------------------
 
-Make sure to place this extension's options right after ``cl``, else ``pass``'s
-command line parser will complain.
+Make sure to place this extension's options right after ``cl``
+
+::
+
+    $ pass cl [options] foo
+
+else ``pass``'s command line parser will complain.
+
+We do not support any options of ``pass show`` such as ``-c|--clip
+[<line_number>]`` or ``-q|--qrcode [<line_number>]``. For instance these won't
+work
+
+::
+
+    $ pass cl -c [<line_number>] foo    # error
+    $ pass cl foo -c [<line_number>]    # ignored
+
+
+If you want to use those, please use ``pass show`` directly and deal with
+metadata in another way. Here, the password is always copied from the first
+line.
 
 
 Installation
-------------
+============
 
 .. code-block:: sh
 
@@ -133,7 +161,7 @@ Installation
 
 
 X selections
-------------
+============
 
 There are different X selections (see ``xclip -selection``):
 
