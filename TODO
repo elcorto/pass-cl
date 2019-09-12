@@ -1,19 +1,2 @@
-* Add -n <line-number> option. For that split get_meta like so:
-
-    get_content(){
-        $GPG -d "${GPG_OPTS[@]}" "$passfile"
-    }
-
-    get_meta(){
-        get_content | tail -n +2
-    }
-
-  and use get_content | tail ... | head ... to select the line.
-
-* Add -s/--swap flag to swap the content of primary <-> clipboard. Needed when
-  we want to paste a password in the shell using Shift-Ins, which only pastes
-  primary. If there is a way to paste the clipboard in the shell, I'd really
-  like to know.
-
-* -r flag: The regex removal using sed in only reliable when it is a prefix.
+* -r flag: The regex removal using sed is only reliable when it is a prefix.
   Change behavior to let the user provide a match group: '^Note:\s*(.+)$'.
