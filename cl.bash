@@ -28,9 +28,9 @@ err(){
 }
 
 
-do_xclip(){
-    xclip -sel $meta_sel > /dev/null 2>&1
-    [ $? -eq 0 ] || err "xclip selection failed"
+xclip_store_meta(){
+    xclip -i -sel $meta_sel > /dev/null 2>&1
+    [ $? -eq 0 ] || err "xclip_store_meta failed"
 }
 
 
@@ -54,7 +54,8 @@ options:
     -r <regex> : select line containing <regex> for metadata, remove <regex>
                  from result
     -l <lineno>: instead of <regex>, copy metadata from line number <lineno>
-    -s         : swap primary and clipboard selection content
+    -s         : swap metadata ($meta_sel) and password ($pass_sel) selection
+                 content
 EOF
 }
 
@@ -99,16 +100,16 @@ if [ $nlines -gt 1 ]; then
     if [ -n "$regex" ]; then
         meta=$(echo "$content" | get_meta | grep -E -m1 "$regex") || \
             err "regex '$regex' doesn't match"
-        echo "$meta" | sed -E "s/$regex//" | do_xclip \
+        echo "$meta" | sed -E "s/$regex//" | xclip_store_meta \
             || err "could not copy metadata with regex '$regex', exit $?"
     elif [ -n "$lineno" ]; then
-        echo "$content" | get_meta $lineno | head -n1 | do_xclip || \
+        echo "$content" | get_meta $lineno | head -n1 | xclip_store_meta || \
             err "could not copy metadata from line number $lineno, exit $?"
     else
         echo "$content" | get_meta | head -n1 \
-            | do_xclip || err "could not copy metadata from 2nd line, exit $?"
+            | xclip_store_meta || err "could not copy metadata from 2nd line, exit $?"
     fi
-    echo "Copied metadata to primary selection."
+    echo "Copied metadata to $meta_sel selection."
 else
     pass="$content"
 fi
@@ -116,9 +117,10 @@ fi
 clip "$pass" "$path"
 
 if $swap_sels; then
-    prim=$(xclip -o -sel prim)
-    xclip -o -sel clip | xclip -i -sel prim
-    echo "$prim" | xclip -i -sel clip
+    meta_content=$(xclip -o -sel $meta_sel)
+    xclip -o -sel $pass_sel | xclip -i -sel $meta_sel
+    echo "$meta_content" | xclip -i -sel $pass_sel
+    echo "Swapped selction $pass_sel <-> $meta_sel"
 fi
 
 cleanup
