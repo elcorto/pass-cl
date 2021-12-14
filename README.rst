@@ -170,4 +170,4 @@ There are different X selections (see ``xclip -selection``):
 * secondary: usually not used
 * clipboard: CTRL-V to paste in most GUI apps
 
-See also `xclip-dump.sh <https://github.com/elcorto/shelltools/blob/master/bin/xclip-dump.sh>`_.
+See also `xclip-dump <https://github.com/elcorto/shelltools/blob/master/bin/xclip-dump>`_.
