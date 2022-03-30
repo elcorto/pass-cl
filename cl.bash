@@ -88,7 +88,7 @@ shift $((OPTIND - 1))
 
 local path="$1"
 local passfile="$PREFIX/$path.gpg"
-[ -f $passfile ] || err "$path is not in the password store"
+[ -f "$passfile" ] || err "$path is not in the password store"
 
 
 check_sneaky_paths "$path"
