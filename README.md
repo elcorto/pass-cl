@@ -6,8 +6,10 @@ separate X selections.
 
 Defaults:
 
-* password: `PASSWORD_STORE_X_SELECTION=clipboard` (default in `pass`)
-* metadata: `PASSWORD_STORE_X_SELECTION_META=primary` (this extension)
+* password: `PASSWORD_STORE_X_SELECTION=clipboard` (default in `pass`), paste
+  with `CTRL-V` (most GUIs) or `CTRL-Shift-V` (most shells)
+* metadata: `PASSWORD_STORE_X_SELECTION_META=primary` (this extension), paste
+  with middle mouse button or `Shift-Insert`
 
 See below for more on X selections.
 
@@ -19,8 +21,7 @@ passzzwoo00rrd11!!1!!
 ```
 
 A common use case is to copy this using `pass show -c foo` (or just
-`pass -c foo`, `show` is default) into the Clipboard X selection (CTRL-V
-to paste).
+`pass -c foo`, `show` is default) into the Clipboard X selection.
 
 `pass` also supports multiple lines (`pass insert -m foo`) in which the
 password is on the first line (or any other with
@@ -47,11 +48,11 @@ selection (`PASSWORD_STORE_X_SELECTION_META`).
 $ pass cl foo
 ```
 
-The default behavior is to copy the first line (password) to the
-Clipboard as usual (like `pass -c foo`, paste with CTRL-V).
+The default behavior is to copy the first line (password) to the Clipboard as
+usual (like `pass -c foo`, paste with `CTRL-V` or `CTRL-Shift-V`).
 Additionally, the second line is copied into the Primary selection
-(Shift-Insert or middle mouse button to paste). We can use the `xclip`
-tool to check what we copied into which selection.
+(`Shift-Insert` or middle mouse button to paste). We can use the `xclip` tool
+to check what we copied into which selection.
 
 ```sh
 $ xclip -o -sel clip
@@ -61,7 +62,7 @@ user@foo.com
 ```
 
 The typical workflow is thus `pass cl foo`, go to where credentials need
-to be inserted (e.g. the browser), middle mouse -\> login, CTRL-V -\>
+to be inserted (e.g. the browser), middle mouse -\> login, `CTRL-V` -\>
 password.
 
 ## Select a metadata line
@@ -94,14 +95,14 @@ complete match to be removed, leaving only `bar` without any whitespace.
 ## Swap selection content
 
 `pass show` copies the password to Clipboard. If you need to paste this
-in a shell where you cannot use CTRL-V (e.g. XTerm), you can copy it to
+in a weird shell where not even `CTRL-Shift-V` works, then you can copy it to
 Primary instead with plain `pass` like so:
 
 ```sh
 $ PASSWORD_STORE_X_SELECTION=primary pass -c foo
 ```
 
-and paste that in the shell or anywhere else with Shift-Insert or the
+and paste that in the shell or anywhere else with `Shift-Insert` or the
 middle mouse button. With `pass cl`, you can use the `-s` flag to swap
 the content of Primary and Clipboard to have the password in Primary.
 
@@ -154,11 +155,13 @@ $ ln -s $(pwd)/cl.bash $PASSWORD_STORE_EXTENSIONS_DIR/cl.bash
 
 # X selections
 
-There are different X selections (see `xclip -selection`):
+There are different X selections (see `xclip -selection`). If you never heard
+of those, then you are probably familiar with at least "the clipboard",
+`CTRL-C` to copy, `CTRL-V` to paste. Well, in X, we have 3.
 
-* primary: default in xclip, use Shift-Insert or the middle mouse
-  button to paste
+* primary: default in xclip, what gets filled when you highlight stuff with the
+  mouse cursor
 * secondary: usually not used
-* clipboard: CTRL-V to paste in most GUI apps
+* clipboard: the system clipboard you know from other systems
 
 See also [xclip-dump](https://github.com/elcorto/shelltools/blob/master/bin/xclip-dump).
