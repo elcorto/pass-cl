@@ -48,7 +48,7 @@ cleanup(){
 
 usage(){
     cat << EOF
-    pass cl [-r <regex> | -l <lineno> ] [-s] <entry>
+    pass cl [[-r <regex> | -l <lineno> ] [-s]] | [-o] <entry>
 
 options:
     -r <regex> : select line containing <regex> for metadata, remove <regex>
@@ -56,6 +56,7 @@ options:
     -l <lineno>: instead of <regex>, copy metadata from line number <lineno>
     -s         : swap metadata ($meta_sel) and password ($pass_sel) selection
                  content
+    -o         : shortcut for "pass otp --clip <entry>"
 EOF
 }
 
@@ -71,16 +72,24 @@ pass_sel=$X_SELECTION
 local regex=
 local lineno=
 local swap_sels=false
-while getopts r:l:sh opt; do
+local do_otp=false
+while getopts r:l:soh opt; do
     case $opt in
         r) regex="$OPTARG";;
         l) lineno="$OPTARG";;
         s) swap_sels=true;;
+        o) do_otp=true;;
         h) usage; exit 0;;
         \?) exit 1;;
     esac
 done
 shift $((OPTIND - 1))
+
+
+if $do_otp; then
+    pass otp --clip "$@"
+    exit 0
+fi
 
 [ $# -ge 1 ] || err "missing argument"
 [ -n "$lineno" ] && [ -n "$regex" ] && err "use either -r or -l"

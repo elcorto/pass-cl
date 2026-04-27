@@ -144,6 +144,12 @@ If you want to use those, please use `pass show` directly and deal with
 metadata in another way. Here, the password is always copied from the
 first line.
 
+## `pass-otp` support
+
+When https://github.com/tadfisher/pass-otp is installed, then `pass cl -o foo`
+is a shortcut for `pass otp --clip foo`.
+
+
 # Installation
 
 ```sh
