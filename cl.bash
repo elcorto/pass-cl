@@ -11,6 +11,10 @@
 #   $GPG
 #   $GPG_OPTS
 
+# pass sources extensions from inside cmd_extension(), so top-level local as
+# used here is valid.
+# shellcheck disable=SC2168
+
 #------------------------------------------------------------------------------
 # cleanup
 #------------------------------------------------------------------------------
@@ -48,7 +52,8 @@ cleanup(){
 
 usage(){
     cat << EOF
-    pass cl [[-r <regex> | -l <lineno> ] [-s]] | [-o] <entry>
+    pass cl [-r <regex> | -l <lineno>] [-s] <entry>
+    pass cl -o <entry>
 
 options:
     -r <regex> : select line containing <regex> for metadata, remove <regex>
@@ -73,7 +78,9 @@ local regex=
 local lineno=
 local swap_sels=false
 local do_otp=false
+local nopts=0
 while getopts r:l:soh opt; do
+    nopts=$((nopts + 1))
     case $opt in
         r) regex="$OPTARG";;
         l) lineno="$OPTARG";;
@@ -87,8 +94,9 @@ shift $((OPTIND - 1))
 
 
 if $do_otp; then
+    [ "$nopts" -gt 1 ] && err "-o cannot be combined with other options"
     pass otp --clip "$@"
-    exit 0
+    exit $?
 fi
 
 [ $# -ge 1 ] || err "missing argument"
