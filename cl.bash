@@ -10,6 +10,7 @@
 #   $X_SELECTION
 #   $GPG
 #   $GPG_OPTS
+#   $PREFIX ($PASSWORD_STORE_DIR or default ~/.password-store)
 
 # pass sources extensions from inside cmd_extension(), so top-level local as
 # used here is valid.
@@ -20,7 +21,7 @@
 #------------------------------------------------------------------------------
 
 set -u -o pipefail
-trap cleanup INT ABRT KILL SEGV PIPE TERM STOP USR1 USR2
+trap cleanup INT ABRT SEGV PIPE TERM USR1 USR2
 
 
 #------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ cleanup(){
 
 usage(){
     cat << EOF
-    pass cl [-r <regex> | -l <lineno>] [-s] <entry>
+    pass cl [-r <regex> | -l <lineno>] [-s] [<entry>]
     pass cl -o <entry>
 
 options:
@@ -92,18 +93,26 @@ while getopts r:l:soh opt; do
 done
 shift $((OPTIND - 1))
 
+# `pass git ls-files` breaks unicode, e.g. fjällräven becomes
+# "fj\303\244llr\303\244ven.gpg", that's why we use find
+if [ $# -eq 0 ]; then
+    local path=$(find $PREFIX -name "*.gpg" \
+        | sed -nre "s|$PREFIX/(.+).gpg|\\1|p" \
+        | fzf -e --height=~20%)
+else
+    [ $# -ge 1 ] || err "need exactly one argument"
+    local path="$1"
+fi
 
 if $do_otp; then
     [ "$nopts" -gt 1 ] && err "-o cannot be combined with other options"
-    pass otp --clip "$@"
+    pass otp --clip "$path"
     exit $?
 fi
 
-[ $# -ge 1 ] || err "missing argument"
 [ -n "$lineno" ] && [ -n "$regex" ] && err "use either -r or -l"
 
 
-local path="$1"
 local passfile="$PREFIX/$path.gpg"
 [ -f "$passfile" ] || err "$path is not in the password store"
 

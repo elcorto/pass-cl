@@ -48,6 +48,15 @@ selection (`PASSWORD_STORE_X_SELECTION_META`).
 $ pass cl foo
 ```
 
+or just
+
+```sh
+$ pass cl
+```
+
+in which case we drop you into a [`fzf`](https://github.com/junegunn/fzf)
+search dialog.
+
 The default behavior is to copy the first line (password) to the Clipboard as
 usual (like `pass -c foo`, paste with `CTRL-V` or `CTRL-Shift-V`).
 Additionally, the second line is copied into the Primary selection
@@ -146,8 +155,8 @@ first line.
 
 ## `pass-otp` support
 
-When https://github.com/tadfisher/pass-otp is installed, then `pass cl -o foo`
-is a shortcut for `pass otp --clip foo`.
+When [pass-otp](https://github.com/tadfisher/pass-otp) is installed, then `pass
+cl -o foo` is a shortcut for `pass otp --clip foo`.
 
 
 # Installation
