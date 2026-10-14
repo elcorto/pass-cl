@@ -104,6 +104,11 @@ while getopts r:l:soLh opt; do
 done
 shift $((OPTIND - 1))
 
+# Early option checks before possible fzf
+[ -n "$lineno" ] && [ -n "$regex" ] && err "use either -r or -l"
+$do_otp && [ "$nopts" -gt 1 ] && \
+    err "-o cannot be combined with other options (except -L)"
+
 if $use_last; then
     [ $# -eq 0 ] || err "-L cannot be combined with <entry>"
     # The cache never expires, which is fine since it is only path/to/entry so
@@ -118,7 +123,7 @@ elif [ $# -eq 0 ]; then
         | sed -nre "s|$PREFIX/(.+).gpg|\\1|p" \
         | fzf -e --height=~20%)
 else
-    [ $# -ge 1 ] || err "need exactly one argument"
+    [ $# -eq 1 ] || err "need exactly one argument"
     path="$1"
 fi
 
@@ -127,17 +132,12 @@ echo "$path" | xclip -i -sel $cache_sel > /dev/null 2>&1 \
     || err "could not store entry in $cache_sel selection"
 
 if $do_otp; then
-    [ "$nopts" -gt 1 ] && err "-o cannot be combined with other options (except -L)"
     pass otp --clip "$path"
     exit $?
 fi
 
-[ -n "$lineno" ] && [ -n "$regex" ] && err "use either -r or -l"
-
-
 local passfile="$PREFIX/$path.gpg"
 [ -f "$passfile" ] || err "$path is not in the password store"
-
 
 check_sneaky_paths "$path"
 content=$($GPG -d "${GPG_OPTS[@]}" "$passfile")
