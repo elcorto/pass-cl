@@ -42,6 +42,23 @@ displayed with another `pass foo` and copied manually if needed. This
 extension additionally copies the second line (by default) to another X
 selection (`PASSWORD_STORE_X_SELECTION_META`).
 
+# Options
+
+```
+pass cl [-r <regex> | -l <lineno>] [-s] [-L | <entry>]
+pass cl -o [-L | <entry>]
+
+options:
+    -r <regex> : select line containing <regex> for metadata, remove <regex>
+                 from result
+    -l <lineno>: instead of <regex>, copy metadata from line number <lineno>
+    -s         : swap metadata (primary) and password (clipboard) selection
+                 content
+    -o         : shortcut for "pass otp --clip <entry>"
+    -L         : use <entry> of the last "pass cl" call (cached in the
+                 secondary selection)
+```
+
 # Usage
 
 ```sh
@@ -159,6 +176,32 @@ When [pass-otp](https://github.com/tadfisher/pass-otp) is installed, then `pass
 cl -o foo` is a shortcut for `pass otp --clip foo`.
 
 
+## Cache last used `<entry>`
+
+We cache the last used `<entry>` in the secondary X selection, so you
+can re-run the last copy with `-L`:
+
+```sh
+# fist copy
+$ pass cl foo
+
+# use cache, same as running `pass cl foo` again
+$ pass cl -L
+```
+
+You can combine this with any other option, esp. with `-o`, which is very handy
+when using `fzf`. In this case you don't have the last command `pass cl
+<entry>` in your shell history -- you only have `pass cl`, so you can't bring
+`pass cl <entry>` from history to the command line and add `-o`.
+
+```sh
+# Drop into fzf, copy password and metadata
+$ pass cl
+
+# Copy OTP
+$ pass cl -oL
+```
+
 # Installation
 
 ```sh
@@ -176,7 +219,7 @@ of those, then you are probably familiar with at least "the clipboard",
 
 * primary: default in xclip, what gets filled when you highlight stuff with the
   mouse cursor
-* secondary: usually not used
+* secondary: usually not used, we use it for the `-L` cache
 * clipboard: the system clipboard you know from other systems
 
 See also [xclip-dump](https://github.com/elcorto/shelltools/blob/master/bin/xclip-dump).
